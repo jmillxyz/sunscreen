@@ -8,7 +8,7 @@ setup(
     author="Jon Miller",
     py_modules=["sunscreen"],
     author_email="jondelmil@gmail.com",
-    install_requires=["click", "requests", "pdbpp"],
+    install_requires=["arrow", "colorama", "click", "requests"],
     entry_points="""
         [console_scripts]
         sunscreen=sunscreen:main

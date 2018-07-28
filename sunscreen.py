@@ -4,30 +4,39 @@ import requests
 import click
 
 
-GEO_API_KEY = os.environ["google_geolocation_api_key"]
+SUNGLASSES_EMOJI = "\U0001f60e"
+SUN_FACE = "\U0001f31e"
+BAR_CHART = "\U0001f4ca"
 
 
-def check_local_zip():
-    geo_url = f"https://www.googleapis.com/geolocation/v1/geolocate?key={GEO_API_KEY}"
-    req = requests.get(geo_url)
-    # getting a 404 here...?
-    print(f"your api key is {GEO_API_KEY}")
-    print("grabbing lat lng")
-    print("grabbing zip code")
+def get_local_zip():
+    zipcode = input("Enter US zipcode: ")
+    # TODO: ensure zipcode is a 5-digit number
+    return zipcode
 
 
-def grab_todays_uv_data():
+def get_todays_uv_data(zipcode):
     print("grabbing today's UV data")
+    epa_url = (
+        "https://iaspub.epa.gov/enviro/efservice/"
+        f"getEnvirofactsUVHOURLY/ZIP/{zipcode}/json"
+    )
+    # TODO: handle network problems
+    req = requests.get(epa_url)
+    return [hour.get("UV_VALUE") for hour in req.json()]
 
 
-def graph_uv_data():
+def graph_uv_data(uv_data):
     print("graphing UV data")
+    print(uv_data)
 
 
 @click.command()
 def main():
     """example"""
-    click.echo("welcome to sunscreen!")
-    zipcode = check_local_zip()
-    grab_todays_uv_data()
-    graph_uv_data()
+    click.echo(f"Welcome to sunscreen! {SUN_FACE} {BAR_CHART} {SUNGLASSES_EMOJI}")
+    # TODO: first run dialog, ask to save zip code for future use
+    # TODO: add option to specify a new zip code as arg
+    zipcode = get_local_zip()
+    uv_data = get_todays_uv_data(zipcode)
+    graph_uv_data(uv_data)

@@ -1,7 +1,8 @@
 import os
 
 import arrow
-from colorama import Fore, Back, Style
+import colored
+from colored import stylize
 import click
 import requests
 
@@ -12,8 +13,11 @@ BAR_CHART = "\U0001f4ca"
 
 class UVForecast:
     def __init__(self, epa_resp):
-        self.today = arrow.utcnow()
+        self.today = self._lookup_time()
         self.readings = self._interpret(epa_resp)
+
+    def _lookup_time(self):
+        return arrow.utcnow()
 
     def _interpret(self, epa_data):
         today = []
@@ -50,34 +54,42 @@ def get_todays_uv_data(zipcode):
 
 
 def graph_uv_data(uv_forecast):
-    # print the date
-    click.echo(uv_forecast.today.format("MMM DD, YYYY HH:MM"))
-
     # print legend
     print("Time ", end="")
     max_uv = uv_forecast.max()
-    LEVEL = " "
+    SPACE = " "
     for val in range(1, max_uv + 1):
         if val < 3:
-            print(Back.GREEN + LEVEL, end="")
+            print(stylize(SPACE, colored.bg("chartreuse_3b")), end="")  # green
         elif val < 6:
-            print(Back.YELLOW + LEVEL, end="")
+            print(stylize(SPACE, colored.bg("yellow_1")), end="")  # yellow
         elif val < 8:
-            print(Back.CYAN + LEVEL, end="")
+            print(stylize(SPACE, colored.bg("orange_1")), end="")  # orange
         elif val < 10:
-            print(Back.RED + LEVEL, end="")
+            print(stylize(SPACE, colored.bg("red")), end="")  # red
         else:
-            print(Back.MAGENTA + LEVEL, end="")
+            print(stylize(SPACE, colored.bg("purple_1b")), end="")  # purple
 
-    print(Style.RESET_ALL)
+    # UV values header, also adds newline
+    print(" UV level")
 
     # TODO: use the colors above as background for the chart below
 
-    # print data
+    # print each hour's time + UV in chart if there's any UV
     for hour in uv_forecast.readings:
         uv = hour["uv_value"]
-        print(hour["datetime"].format("HHmm"), end=" ")
-        print("*" * uv)
+        if uv > 0:
+            print(hour["datetime"].format("HHmm"), end=" ")
+            print(fill_to_limit(data="*" * uv, limit=max_uv + 1) + f"{uv}")
+
+
+def fill_to_limit(data, limit):
+    """Extend a given string `data` by spaces to length `limit`."""
+    if len(data) > limit:
+        raise Exception(
+            f"length of string {data} is higher than your requested limit, {limit}"
+        )
+    return data + (limit - len(data)) * " "
 
 
 @click.command()

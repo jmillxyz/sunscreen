@@ -1,5 +1,7 @@
+import json
 import os
 
+from appdirs import user_config_dir
 import arrow
 import colored
 from colored import stylize
@@ -15,6 +17,7 @@ class UVForecast:
     def __init__(self, epa_resp):
         self.today = self._lookup_time()
         self.readings = self._interpret(epa_resp)
+        self.max = self._max()
 
     def _lookup_time(self):
         return arrow.utcnow()
@@ -31,13 +34,37 @@ class UVForecast:
             )
         return today
 
-    def max(self):
+    def _max(self):
         return max(a["uv_value"] for a in self.readings)
 
 
+class ConfigFileHandler:
+    def __init__(self):
+        self.cfg_dir = user_config_dir(appname="sunscreen", appauthor=False)
+        os.makedirs(self.cfg_dir, exist_ok=True)
+        self.cfg_path = os.path.join(self.cfg_dir, "sunscreen.cfg")
+
+    def save_zip_to_file(self, zipcode):
+        config = {"zipcode": zipcode}
+        with open(self.cfg_path, "w") as f:
+            json.dump(config, f)
+
+    def get_zip_from_file(self):
+        if os.path.isfile(self.cfg_path):
+            with open(self.cfg_path) as f:
+                config = json.load(f)
+                return config.get("zipcode", None)
+        else:
+            return None
+
+
 def get_local_zip():
-    zipcode = click.prompt("Enter US zipcode", default=78701, type=int)
+    cfg_handler = ConfigFileHandler()
+    saved_zipcode = cfg_handler.get_zip_from_file() or None
+    zipcode = click.prompt("Enter US zipcode", default=saved_zipcode, type=str)
     # TODO: ensure zipcode is legit
+    if saved_zipcode is None:
+        cfg_handler.save_zip_to_file(zipcode)
     return zipcode
 
 
@@ -56,7 +83,7 @@ def get_todays_uv_data(zipcode):
 def graph_uv_data(uv_forecast):
     # print legend
     print("Time ", end="")
-    max_uv = uv_forecast.max()
+    max_uv = uv_forecast.max
     SPACE = " "
     for val in range(1, max_uv + 1):
         if val < 3:
@@ -80,11 +107,11 @@ def graph_uv_data(uv_forecast):
         uv = hour["uv_value"]
         if uv > 0:
             print(hour["datetime"].format("HHmm"), end=" ")
-            print(fill_to_limit(data="*" * uv, limit=max_uv + 1) + f"{uv}")
+            print(pad(data="*" * uv, limit=max_uv + 1) + f"{uv}")
 
 
-def fill_to_limit(data, limit):
-    """Extend a given string `data` by spaces to length `limit`."""
+def pad(data, limit):
+    """Pad a given string `data` by spaces to length `limit`."""
     if len(data) > limit:
         raise Exception(
             f"length of string {data} is higher than your requested limit, {limit}"

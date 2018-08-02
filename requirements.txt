@@ -1,3 +1,5 @@
+appdirs
+arrow
 click
 requests
 colored

@@ -123,7 +123,6 @@ def pad(data, limit):
 def main():
     """example"""
     click.echo(f"Welcome to sunscreen! {SUN_FACE} {BAR_CHART}")
-    # TODO: first run dialog, ask to save zip code for future use
     # TODO: add option to specify a new zip code as arg
     zipcode = get_local_zip()
     uv_data = get_todays_uv_data(zipcode)

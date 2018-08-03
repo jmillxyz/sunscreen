@@ -121,7 +121,6 @@ def pad(data, limit):
 
 @click.command()
 def main():
-    """example"""
     click.echo(f"Welcome to sunscreen! {SUN_FACE} {BAR_CHART}")
     # TODO: add option to specify a new zip code as arg
     zipcode = get_local_zip()

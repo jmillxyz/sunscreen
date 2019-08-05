@@ -1,13 +1,18 @@
 import json
 import os
+import warnings
 
 from appdirs import user_config_dir
 import arrow
+from arrow.factory import ArrowParseWarning
 import colored
 from colored import stylize
 import click
 import requests
 
+# Suppress warnings about using arrow.get() without a format string
+# https://github.com/crsmithdev/arrow/issues/612
+warnings.simplefilter("ignore", ArrowParseWarning)
 
 SUN_FACE = "\U0001f31e"
 BAR_CHART = "\U0001f4ca"
@@ -76,8 +81,7 @@ def get_todays_uv_data(zipcode):
     )
     # TODO: handle network problems
     req = requests.get(epa_url)
-    uv = UVForecast(req.json())
-    return uv
+    return UVForecast(req.json())
 
 
 def graph_uv_data(uv_forecast):

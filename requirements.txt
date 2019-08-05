@@ -1,5 +1,12 @@
-appdirs
-arrow
-click
-requests
-colored
+appdirs==1.4.3
+arrow==0.14.4
+certifi==2019.6.16
+chardet==3.0.4
+Click==7.0
+colored==1.3.93
+idna==2.8
+python-dateutil==2.8.0
+requests==2.22.0
+six==1.12.0
+sunscreen==0.0.1
+urllib3==1.25.3

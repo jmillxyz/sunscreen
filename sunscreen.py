@@ -18,6 +18,10 @@ SUN_FACE = "\U0001f31e"
 BAR_CHART = "\U0001f4ca"
 
 
+class UpstreamError(RuntimeError):
+    print("The upstream data source is having connectivity problems!")
+
+
 class UVForecast:
     def __init__(self, epa_resp):
         self.today = self._lookup_time()
@@ -81,6 +85,9 @@ def get_todays_uv_data(zipcode):
     )
     # TODO: handle network problems
     req = requests.get(epa_url)
+    if req.status_code != 200:
+        # couldn't get the stream!
+        raise UpstreamError
     return UVForecast(req.json())
 
 

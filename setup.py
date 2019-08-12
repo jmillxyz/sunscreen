@@ -7,10 +7,10 @@ with open(path.join(this_dir, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="sunscreen",
-    version="0.0.3",
+    version="0.0.4",
     description="What's the UV forecast?",
     author="Jon Miller",
-    author_email="jondelmil@gmail.com",
+    author_email="jmill@jmill.xyz",
     url="https://github.com/jmillxyz/sunscreen",
     py_modules=["sunscreen"],
     install_requires=["appdirs", "arrow", "colored", "click", "requests"],

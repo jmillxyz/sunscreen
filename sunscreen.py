@@ -83,7 +83,6 @@ def get_todays_uv_data(zipcode):
         "https://iaspub.epa.gov/enviro/efservice/"
         f"getEnvirofactsUVHOURLY/ZIP/{zipcode}/json"
     )
-    # TODO: handle network problems
     req = requests.get(epa_url)
     if req.status_code != 200:
         # couldn't get the stream!

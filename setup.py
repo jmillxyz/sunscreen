@@ -7,7 +7,7 @@ with open(path.join(this_dir, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="sunscreen",
-    version="0.0.2",
+    version="0.0.3",
     description="What's the UV forecast?",
     author="Jon Miller",
     author_email="jondelmil@gmail.com",

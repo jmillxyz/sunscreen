@@ -19,7 +19,7 @@ BAR_CHART = "\U0001f4ca"
 
 
 class UpstreamError(RuntimeError):
-    print("The upstream data source is having connectivity problems!")
+    pass
 
 
 class UVForecast:
@@ -134,5 +134,10 @@ def main():
     click.echo(f"Welcome to sunscreen! {SUN_FACE} {BAR_CHART}")
     # TODO: add option to specify a new zip code as arg
     zipcode = get_local_zip()
-    uv_data = get_todays_uv_data(zipcode)
-    graph_uv_data(uv_data)
+    try:
+        uv_data = get_todays_uv_data(zipcode)
+        graph_uv_data(uv_data)
+    except UpstreamError:
+        print("The upstream data source is having connectivity problems!")
+    except requests.exceptions.ConnectionError:
+        print("Having trouble connecting, check your network settings.")
